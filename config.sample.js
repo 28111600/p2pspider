@@ -6,8 +6,10 @@ var config = {
     db_user: 'root',
     db_password: 'password',
 
-    p2p_listen: '0.0.0.0', 
-    p2p_port:  [6881]
+    p2p_listen: '0.0.0.0',
+    p2p_port: [6881],
+
+    lengthQueue: 10
 };
 
 module.exports = config;

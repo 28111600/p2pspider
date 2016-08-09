@@ -18,21 +18,27 @@ p2p.ignore(function (infohash, rinfo, callback) {
 });
 
 var count = 0;
-var lengthQueue = 10;
+var lengthQueue = config.lengthQueue || 10;
 var arrayQueue = [];
 
 
 p2p.on('metadata', function (metadata) {
     var data = {};
-    data.hash = metadata.infohash;
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
+    if (!data.name) { return; }
 
+    data.hash = metadata.infohash;
     data.magnet = metadata.magnet;
     data.fetchedAt = new Date();
+
+    console.log("add to queue.");
 
     arrayQueue.push(data);
 
     if (arrayQueue.length >= lengthQueue) {
+
+        console.log("write to database.");
+        console.log(new Date().toUTCString(), count);
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
@@ -56,7 +62,6 @@ p2p.on('metadata', function (metadata) {
 
                     if (result.affectedRows) {
                         count += result.affectedRows;
-                        console.log(new Date().toUTCString(), count);
 
                     }
 
