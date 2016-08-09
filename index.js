@@ -61,12 +61,8 @@ p2p.on('metadata', function (metadata) {
                 var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
                 conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
-                 
-                    if (err) {
-                        conn.rollback(function () {
-                            throw err;
-                        });
-                    } else {
+
+                    if (!err) {
                         if (result.affectedRows) {
                             subCount += result.affectedRows;
 
