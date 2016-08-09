@@ -17,7 +17,6 @@ p2p.ignore(function (infohash, rinfo, callback) {
     callback(theInfohashIsExistsInDatabase);
 });
 
-
 var count = 0;
 
 p2p.on('metadata', function (metadata) {
