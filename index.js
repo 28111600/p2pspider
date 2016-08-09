@@ -1,7 +1,7 @@
 'use strict';
 
 var P2PSpider = require('./lib');
-var mysql = require('easy-mysql');
+var mysql = require('mysql');
 
 var config = require('./config');
 
@@ -21,7 +21,15 @@ var count = 0;
 var lengthQueue = config.lengthQueue || 10;
 var arrayQueue = [];
 
+var conn = mysql.createConnection({
+    host: config.db_host,
+    user: config.db_user,
+    password: config.db_password,
+    database: config.db_database,
+    port: config.db_port
+});
 
+conn.connect();
 p2p.on('metadata', function (metadata) {
     var data = {};
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
@@ -43,38 +51,43 @@ p2p.on('metadata', function (metadata) {
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
 
-        var conn = mysql.connect({
-            host: config.db_host,
-            user: config.db_user,
-            password: config.db_password,
-            database: config.db_database,
-            port: config.db_port
-        });
 
 
-        var subCount = 0;
-        for (var i = 0; i < subArrayQueue.length; i++) {
 
-            var data = subArrayQueue[i];
-            var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
+        conn.beginTransaction(function (err) {
+            if (err) { throw err; }
+            var subCount = 0;
+            for (var i = 0; i < subArrayQueue.length; i++) {
 
-            conn.execute('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                var data = subArrayQueue[i];
+                var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
-                if (!err) {
-                    if (result.affectedRows) {
-                        subCount += result.affectedRows;
+                conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
 
-                        count += subCount;
-                        console.log(subCount + ' / ' + count);
-                        console.log('success!');
+                    if (!err) {
 
+                        if (result.affectedRows) {
+                            subCount += result.affectedRows;
+
+                        }
 
                     }
+                });
+            }
 
+            conn.commit(function (err) {
+                if (err) {
+                    conn.rollback(function () {
+                        throw err;
+                    });
                 }
-            });
-        }
+                count += subCount;
+                console.log(subCount + ' / ' + count);
+                console.log('success!');
 
+            });
+
+        });
 
     }
 });
@@ -97,3 +110,5 @@ if (config.p2p_port.length) {
 
     }
 }
+
+//  conn.end();
