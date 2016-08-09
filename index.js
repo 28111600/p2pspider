@@ -34,7 +34,7 @@ p2p.on('metadata', function (metadata) {
 
     if (arrayQueue.length >= lengthQueue) {
 
-        subArrayQueue = [].concat(arrayQueue);
+        var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
         var conn = mysql.createConnection({
             host: config.db_host,
