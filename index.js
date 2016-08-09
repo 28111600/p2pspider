@@ -31,7 +31,7 @@ p2p.on('metadata', function (metadata) {
     data.magnet = metadata.magnet;
     data.fetchedAt = new Date();
 
-   // console.log("add to queue.");
+    // console.log("add to queue.");
 
     arrayQueue.push(data);
 
@@ -51,23 +51,27 @@ p2p.on('metadata', function (metadata) {
         });
 
         conn.connect();
+        
+        conn.beginTransaction(function (err) {
+            if (err) { throw err; }
+            for (var i = 0; i < subArrayQueue.length; i++) {
 
-        for (var i = 0; i < subArrayQueue.length; i++) {
+                var data = subArrayQueue[i];
+                var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
-            var data = subArrayQueue[i];
-            var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
+                conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                    if (!err) {
 
-            conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
-                if (!err) {
+                        if (result.affectedRows) {
+                            count += result.affectedRows;
 
-                    if (result.affectedRows) {
-                        count += result.affectedRows;
+                        }
 
                     }
+                });
+            }
 
-                }
-            });
-        }
+        });
         conn.end();
     }
 });
