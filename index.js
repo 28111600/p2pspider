@@ -21,15 +21,7 @@ var count = 0;
 var lengthQueue = config.lengthQueue || 10;
 var arrayQueue = [];
 
-var conn = mysql.createConnection({
-    host: config.db_host,
-    user: config.db_user,
-    password: config.db_password,
-    database: config.db_database,
-    port: config.db_port
-});
 
-conn.connect();
 p2p.on('metadata', function (metadata) {
     var data = {};
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
@@ -50,9 +42,15 @@ p2p.on('metadata', function (metadata) {
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
+        var conn = mysql.createConnection({
+            host: config.db_host,
+            user: config.db_user,
+            password: config.db_password,
+            database: config.db_database,
+            port: config.db_port
+        });
 
-
-
+        conn.connect();
 
         conn.beginTransaction(function (err) {
             if (err) { throw err; }
@@ -84,11 +82,13 @@ p2p.on('metadata', function (metadata) {
                 count += subCount;
                 console.log(subCount + ' / ' + count);
                 console.log('success!');
+                console.log(1);
+                conn.end();
 
             });
-
+            console.log(2);
         });
-
+        console.log(3);
     }
 });
 
@@ -110,5 +110,3 @@ if (config.p2p_port.length) {
 
     }
 }
-
-//  conn.end();
