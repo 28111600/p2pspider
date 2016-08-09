@@ -61,8 +61,9 @@ p2p.on('metadata', function (metadata) {
                 var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
                 conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                 
                     if (err) {
-                        con.rollback(function () {
+                        conn.rollback(function () {
                             throw err;
                         });
                     } else {
@@ -77,7 +78,7 @@ p2p.on('metadata', function (metadata) {
 
             conn.commit(function (err) {
                 if (err) {
-                    con.rollback(function () {
+                    conn.rollback(function () {
                         throw err;
                     });
                 }
