@@ -37,8 +37,8 @@ p2p.on('metadata', function (metadata) {
 
     if (arrayQueue.length >= lengthQueue) {
 
-        console.log("write to database.");
-        console.log(new Date().toUTCString(), count);
+        console.log(new Date().toUTCString());
+        console.log("writting to database.");
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
@@ -51,25 +51,41 @@ p2p.on('metadata', function (metadata) {
         });
 
         conn.connect();
-        
+
         conn.beginTransaction(function (err) {
             if (err) { throw err; }
+            var subCount = 0;
             for (var i = 0; i < subArrayQueue.length; i++) {
 
                 var data = subArrayQueue[i];
                 var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
                 conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
-                    if (!err) {
-
+                    if (err) {
+                        con.rollback(function () {
+                            throw err;
+                        });
+                    } else {
                         if (result.affectedRows) {
-                            count += result.affectedRows;
+                            subCount += result.affectedRows;
 
                         }
 
                     }
                 });
             }
+
+            conn.commit(function (err) {
+                if (err) {
+                    con.rollback(function () {
+                        throw err;
+                    });
+                }
+                count += subCount;
+                console.log(subCount + ' / ' + count);
+                console.log('success!');
+
+            });
 
         });
         conn.end();
