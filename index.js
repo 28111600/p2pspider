@@ -1,7 +1,7 @@
 'use strict';
 
 var P2PSpider = require('./lib');
-var mysql = require('mysql');
+var mysql = require('easy-mysql');
 
 var config = require('./config');
 
@@ -42,7 +42,8 @@ p2p.on('metadata', function (metadata) {
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
-        var conn = mysql.createConnection({
+
+        var conn = mysql.connect({
             host: config.db_host,
             user: config.db_user,
             password: config.db_password,
@@ -50,42 +51,31 @@ p2p.on('metadata', function (metadata) {
             port: config.db_port
         });
 
-        conn.connect();
 
-        conn.beginTransaction(function (err) {
-            if (err) { throw err; }
-            var subCount = 0;
-            for (var i = 0; i < subArrayQueue.length; i++) {
+        var subCount = 0;
+        for (var i = 0; i < subArrayQueue.length; i++) {
 
-                var data = subArrayQueue[i];
-                var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
+            var data = subArrayQueue[i];
+            var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
-                conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+            conn.execute('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
 
-                    if (!err) {
-                        if (result.affectedRows) {
-                            subCount += result.affectedRows;
+                if (!err) {
+                    if (result.affectedRows) {
+                        subCount += result.affectedRows;
 
-                        }
+                        count += subCount;
+                        console.log(subCount + ' / ' + count);
+                        console.log('success!');
+
 
                     }
-                });
-            }
 
-            conn.commit(function (err) {
-                if (err) {
-                    conn.rollback(function () {
-                        throw err;
-                    });
                 }
-                count += subCount;
-                console.log(subCount + ' / ' + count);
-                console.log('success!');
-
             });
+        }
 
-        });
-        conn.end();
+
     }
 });
 
