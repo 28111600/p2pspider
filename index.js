@@ -18,10 +18,11 @@ p2p.ignore(function (infohash, rinfo, callback) {
 });
 
 var count = 0;
+var lengthQueue = 10;
+var arrayQueue = [];
+
 
 p2p.on('metadata', function (metadata) {
-
-
     var data = {};
     data.hash = metadata.infohash;
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
@@ -29,30 +30,41 @@ p2p.on('metadata', function (metadata) {
     data.magnet = metadata.magnet;
     data.fetchedAt = new Date();
 
+    arrayQueue.push(data);
 
-    var conn = mysql.createConnection({
-        host: config.db_host,
-        user: config.db_user,
-        password: config.db_password,
-        database: config.db_database,
-        port: config.db_port
-    });
+    if (arrayQueue.length >= lengthQueue) {
 
-    conn.connect();
-    var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
-    conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
-        if (!err) {
+        subArrayQueue = [].concat(arrayQueue);
+        arrayQueue = [];
+        var conn = mysql.createConnection({
+            host: config.db_host,
+            user: config.db_user,
+            password: config.db_password,
+            database: config.db_database,
+            port: config.db_port
+        });
 
-            if (result.affectedRows) {
-                count += result.affectedRows;
-                console.log(new Date().toUTCString(), count);
+        conn.connect();
 
-            }
+        for (var i = 0; i < subArrayQueue.length; i++) {
 
+            var data = subArrayQueue[i];
+            var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
+
+            conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                if (!err) {
+
+                    if (result.affectedRows) {
+                        count += result.affectedRows;
+                        console.log(new Date().toUTCString(), count);
+
+                    }
+
+                }
+            });
         }
-    });
-    conn.end();
-
+        conn.end();
+    }
 });
 
 /*
