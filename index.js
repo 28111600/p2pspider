@@ -31,7 +31,7 @@ p2p.on('metadata', function (metadata) {
     data.magnet = metadata.magnet;
     data.fetchedAt = new Date();
 
-    console.log("add to queue.");
+   // console.log("add to queue.");
 
     arrayQueue.push(data);
 
