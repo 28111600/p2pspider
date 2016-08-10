@@ -124,7 +124,9 @@ p2p.on('metadata', function (metadata) {
 
                                 conn.query(subQuery.join(''), subPost, function (err, result) {
 
-                                    if (err) { throw err; }
+                                    if (err) { 
+                                        console.log(subQuery.join(''), subPost);
+                                        throw err; }
                                 })
 
                             }
