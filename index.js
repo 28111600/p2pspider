@@ -98,12 +98,8 @@ p2p.on('metadata', function (metadata) {
 
                 var arrayPost = [];
                 var arrayQuery = [];
-                var completed = 0;
 
-                for (var i = 0; i < subArrayQueue.length; i++) {
-                    var data = subArrayQueue[i];
-                    completed += data.files.length;
-                }
+
 
                 for (var i = 0; i < subArrayQueue.length; i++) {
 
@@ -120,58 +116,30 @@ p2p.on('metadata', function (metadata) {
                             if (result.affectedRows) {
                                 subCount += result.affectedRows;
 
-                                if (data.files.length === 0) { console.log(metadata); }
-
-                                for (var j = 0; j < data.files.length; j++) {
-                                    var itemFileinfo = data.files[j];
-                                    var post = [data.hash, itemFileinfo.filename, itemFileinfo.length];
-                                    var query = 'insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;';
-
-                                    conn.query(query, post, function (err, result) {
-                                        console.log(2);
-                                        completed -= 1;
-                                        console.log('completed:' + completed);
-                                        if (completed === 0) {
-
-                                            conn.commit(function (err) {
-                                                console.log(3);
-                                                if (err) {
-                                                    conn.rollback(function () {
-                                                        throw err;
-                                                    });
-                                                }
-                                                count += subCount;
-                                                console.log(subCount + ' / ' + count);
-                                                console.log('success!');
-                                                console.log(this, this === conn);
-                                                conn.release();
-
-                                            });
-
-
-
-                                        }
-                                        if (err) {
-                                            console.log(query, post);
-                                            throw err;
-                                        }
-
-                                        if (result.affectedRows === 0) {
-
-                                            console.log(metadata);
-                                        }
-                                    })
-
-                                }
-
-
 
 
                             }
 
+
                         }
                     });
                 }
+
+                conn.commit(function (err) {
+                    console.log(2);
+                    if (err) {
+                        conn.rollback(function () {
+                            throw err;
+                        });
+                    }
+                    count += subCount;
+                    console.log(subCount + ' / ' + count);
+                    console.log('success!');
+                    console.log(this, this === conn);
+                    conn.release();
+
+                });
+
 
 
             });
