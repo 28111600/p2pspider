@@ -34,6 +34,15 @@ var writetodatabase = function (arrayMetadata, pool) {
 
 }
 
+var getFullName = function (path) {
+    var chrPathSplit = "/";
+    var textPath = [];
+    for (var i = 0; i < path.length; i++) {
+        text.push(path[i].toString('utf8'));
+    }
+    return textPath.join(chrPathSplit);
+}
+
 p2p.on('metadata', function (metadata) {
     var data = {};
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
@@ -55,8 +64,9 @@ p2p.on('metadata', function (metadata) {
             var itemFileinfo = metadata.info.files[i];
 
             if (itemFileinfo.path) {
+
                 data.files.push({
-                    filename: itemFileinfo.path[0].toString('utf8'),
+                    filename: getFullName(itemFileinfo.path),
                     length: itemFileinfo.length
 
                 })
@@ -65,7 +75,7 @@ p2p.on('metadata', function (metadata) {
     } else {
 
         data.files.push({
-            filename: data.name,
+            filename: getFullName([metadata.info.name]),
             length: metadata.info.length,
 
         });
