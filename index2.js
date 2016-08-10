@@ -21,13 +21,7 @@ var count = 0;
 var lengthQueue = config.lengthQueue || 10;
 var arrayQueue = [];
 
-var pool = mysql.createPool({
-    host: config.db_host,
-    user: config.db_user,
-    password: config.db_password,
-    database: config.db_database,
-    port: config.db_port
-});
+
 
 p2p.on('metadata', function (metadata) {
     var data = {};
@@ -50,48 +44,53 @@ p2p.on('metadata', function (metadata) {
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
 
+        var conn = mysql.createConnection({
+            host: config.db_host,
+            user: config.db_user,
+            password: config.db_password,
+            database: config.db_database,
+            port: config.db_port
+        });
 
+        conn.connect();
 
-        pool.getConnection(function (err, conn) {
+        conn.beginTransaction(function (err) {
+            if (err) { throw err; }
+            var subCount = 0;
+            for (var i = 0; i < subArrayQueue.length; i++) {
 
-            conn.beginTransaction(function (err) {
-                if (err) { throw err; }
-                var subCount = 0;
-                for (var i = 0; i < subArrayQueue.length; i++) {
+                var data = subArrayQueue[i];
+                var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
-                    var data = subArrayQueue[i];
-                    var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
+                conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
 
-                    conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                    if (!err) {
 
-                        if (!err) {
-
-                            if (result.affectedRows) {
-                                subCount += result.affectedRows;
-
-                            }
+                        if (result.affectedRows) {
+                            subCount += result.affectedRows;
 
                         }
+
+                    }
+                });
+            }
+
+            conn.commit(function (err) {
+
+                if (err) {
+                    conn.rollback(function () {
+                        throw err;
                     });
                 }
+                count += subCount;
+                console.log(subCount + ' / ' + count);
+                console.log('success!');
 
-                conn.commit(function (err) {
-
-                    if (err) {
-                        conn.rollback(function () {
-                            throw err;
-                        });
-                    }
-                    count += subCount;
-                    console.log(subCount + ' / ' + count);
-                    console.log('success!');
-
-                    conn.release();
-
-                });
-
+                conn.end();
             });
-        })
+
+        });
+
     }
 });
 
