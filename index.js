@@ -29,6 +29,11 @@ var pool = mysql.createPool({
     port: config.db_port
 });
 
+var writetodatabase = function (arrayMetadata, pool) {
+
+
+}
+
 p2p.on('metadata', function (metadata) {
     var data = {};
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
@@ -42,20 +47,41 @@ p2p.on('metadata', function (metadata) {
 
     arrayQueue.push(data);
 
-    console.log(data.magnet);
-    if (metadata.info.files) {
-        console.log("have files")
-        for (var i = 0; i < metadata.info.files.length; i++) {
-            console.log(metadata.info.files[i].path.toString('utf8'));
+    if (!metadata.info.files) {
+        metadata.info.files = [
+            {
+                length: meta.info.length,
+                path: [metadata.info.name]
+            }
 
+        ]
 
-        }
-    } else {
-
-        console.log('no file');
-        console.log(metadata);
     }
 
+
+
+    data.files = [];
+
+    if (metadata.info.files) {
+
+        for (var i = 0; i < metadata.info.files.length; i++) {
+            var itemFileInfo = metadata.info.files[i];
+
+            for (var j = 0; j < itemFileInfo.path.length; j++) {
+
+                console.log(itemFileInfo.path[i].toString('utf8'));
+            }
+
+            if (itemFileInfo.path) {
+                data.files.push({
+                    name: itemFileInfo.path.toString('utf8'),
+                    length: itemFileInfo.length
+
+
+                })
+            }
+        }
+    }
 
     return;
     if (arrayQueue.length >= lengthQueue) {
