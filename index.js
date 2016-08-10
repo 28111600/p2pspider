@@ -52,12 +52,12 @@ p2p.on('metadata', function (metadata) {
     if (metadata.info.files) {
 
         for (var i = 0; i < metadata.info.files.length; i++) {
-            var itemFileInfo = metadata.info.files[i];
+            var itemFileinfo = metadata.info.files[i];
 
-            if (itemFileInfo.path) {
+            if (itemFileinfo.path) {
                 data.files.push({
-                    filename: itemFileInfo.path[0].toString('utf8'),
-                    length: itemFileInfo.length
+                    filename: itemFileinfo.path[0].toString('utf8'),
+                    length: itemFileinfo.length
 
                 })
             }
@@ -76,7 +76,7 @@ p2p.on('metadata', function (metadata) {
 
             var itemFileinfo = data.files[i];
 
-            data.length += itemFileInfo.length;
+            data.length += itemFileinfo.length;
         }
 
     }
@@ -117,8 +117,7 @@ p2p.on('metadata', function (metadata) {
 
                                 for (var j = 0; j < data.files.length; j++) {
                                     var itemFileinfo = data.files[j];
-                                    console.log(j, itemFileinfo);
-                                    subPost.push(data.hash, itemFileInfo.filename, itemFileInfo.length);
+                                    subPost.push(data.hash, itemFileinfo.filename, itemFileinfo.length);
                                     subQuery.push('insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;');
 
                                 }
