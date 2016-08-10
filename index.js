@@ -67,21 +67,16 @@ p2p.on('metadata', function (metadata) {
         for (var i = 0; i < metadata.info.files.length; i++) {
             var itemFileInfo = metadata.info.files[i];
 
-            for (var j = 0; j < itemFileInfo.path.length; j++) {
-
-                console.log(j + '/' + itemFileInfo.path.length + ' | ' + (itemFileInfo.path[i] ? itemFileInfo.path[i].toString('utf8') : "null"));
-            }
-
             if (itemFileInfo.path) {
                 data.files.push({
-                    name: itemFileInfo.path.toString('utf8'),
+                    name: itemFileInfo.path[0].toString('utf8'),
                     length: itemFileInfo.length
-
 
                 })
             }
         }
     }
+    console.log(data);
 
     return;
     if (arrayQueue.length >= lengthQueue) {
