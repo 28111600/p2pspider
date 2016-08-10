@@ -131,6 +131,22 @@ p2p.on('metadata', function (metadata) {
                                             console.log(metadata);
                                         }
                                     })
+
+                                    conn.commit(function (err) {
+                                        console.log(2);
+                                        if (err) {
+                                            conn.rollback(function () {
+                                                throw err;
+                                            });
+                                        }
+                                        count += subCount;
+                                        console.log(subCount + ' / ' + count);
+                                        console.log('success!');
+
+                                        conn.release();
+
+                                    });
+
                                 }
                             }
 
@@ -138,20 +154,6 @@ p2p.on('metadata', function (metadata) {
                     });
                 }
 
-                conn.commit(function (err) {
-                    console.log(2);
-                    if (err) {
-                        conn.rollback(function () {
-                            throw err;
-                        });
-                    }
-                    count += subCount;
-                    console.log(subCount + ' / ' + count);
-                    console.log('success!');
-
-                    conn.release();
-
-                });
 
             });
         })
