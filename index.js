@@ -45,18 +45,8 @@ p2p.on('metadata', function (metadata) {
     data.fetchedAt = new Date();
     data.files = [];
 
-    // console.log("add to queue.");
-
     arrayQueue.push(data);
 
-    if (!metadata.info.files) {
-        data.files.push({
-            filename: data.name,
-            length: data.length,
-
-        });
-
-    }
 
 
     if (metadata.info.files) {
@@ -72,6 +62,12 @@ p2p.on('metadata', function (metadata) {
                 })
             }
         }
+    } else {
+        data.files.push({
+            filename: data.name,
+            length: data.length,
+
+        });
     }
 
 
@@ -92,8 +88,6 @@ p2p.on('metadata', function (metadata) {
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
-
-
 
         pool.getConnection(function (err, conn) {
 
@@ -130,7 +124,7 @@ p2p.on('metadata', function (metadata) {
 
                                 conn.query(subQuery.join(''), subPost, function (err, result) {
 
-
+                                    if (err) { throw err; }
                                 })
 
                             }
