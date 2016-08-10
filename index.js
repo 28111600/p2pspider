@@ -107,6 +107,11 @@ p2p.on('metadata', function (metadata) {
                     var query = 'insert into p2pspider (hash,name,length,magnet,fetched) select * from ( select ?,?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);';
                     conn.query(query, post, function (err, result) {
 
+console.log(1)
+                    })
+console.log(2)
+                    conn.query(query, post, function (err, result) {
+console.log(3)
                         if (!err) {
 
                             if (result.affectedRows) {
@@ -120,7 +125,7 @@ p2p.on('metadata', function (metadata) {
                                     var query = 'insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;';
 
                                     conn.query(query, post, function (err, result) {
-                                        console.log(1);
+                                        console.log(4);
                                         if (err) {
                                             console.log(query, post);
                                             throw err;
@@ -134,9 +139,9 @@ p2p.on('metadata', function (metadata) {
 
                                 }
 
-                                
+
                                 conn.commit(function (err) {
-                                    console.log(2);
+                                    console.log(5);
                                     if (err) {
                                         conn.rollback(function () {
                                             throw err;
