@@ -131,7 +131,7 @@ p2p.on('metadata', function (metadata) {
                                     conn.query(query, post, function (err, result) {
                                         console.log(2);
                                         completed -= 1;
-                                        console.log(completed);
+                                        console.log('completed:' + completed);
                                         if (completed === 0) {
 
                                             conn.commit(function (err) {
@@ -145,7 +145,7 @@ p2p.on('metadata', function (metadata) {
                                                 console.log(subCount + ' / ' + count);
                                                 console.log('success!');
                                                 console.log(this, this === conn);
-                                                this.release();
+                                                conn.release();
 
                                             });
 
