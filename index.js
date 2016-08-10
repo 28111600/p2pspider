@@ -72,12 +72,10 @@ p2p.on('metadata', function (metadata) {
 
 
     if (data.files) {
-        for (var i = 0; i < data.files; i++) {
-
+        for (var i = 0; i < data.files.length; i++) {
             var itemFileinfo = data.files[i];
-
             data.length += itemFileinfo.length;
-            console.log(itemFileinfo.length);
+
         }
 
     }
