@@ -41,26 +41,25 @@ p2p.on('metadata', function (metadata) {
 
     data.hash = metadata.infohash;
     data.magnet = metadata.magnet;
+    data.length = metadata.info.length;
     data.fetchedAt = new Date();
+    data.files = [];
 
     // console.log("add to queue.");
+    console.log(data.length);
 
+    return ;
     arrayQueue.push(data);
 
-    /* if (!metadata.info.files) {
-         metadata.info.files = [
-             {
-                 length: metadata.info.length,
-                 path: [metadata.info.name]
-             }
- 
-         ]
- 
-     }
- 
- 
- */
-    data.files = [];
+    if (!metadata.info.files) {
+        data.files.push({
+            filename: data.name,
+            length: data.length,
+
+        });
+
+    }
+
 
     if (metadata.info.files) {
 
@@ -69,7 +68,7 @@ p2p.on('metadata', function (metadata) {
 
             if (itemFileInfo.path) {
                 data.files.push({
-                    name: itemFileInfo.path[0].toString('utf8'),
+                    filename: itemFileInfo.path[0].toString('utf8'),
                     length: itemFileInfo.length
 
                 })
@@ -78,7 +77,7 @@ p2p.on('metadata', function (metadata) {
     }
     console.log(data);
 
-    return;
+
     if (arrayQueue.length >= lengthQueue) {
 
         console.log(new Date().toUTCString());
@@ -94,9 +93,14 @@ p2p.on('metadata', function (metadata) {
             conn.beginTransaction(function (err) {
                 if (err) { throw err; }
                 var subCount = 0;
+
+                var arrayPost = [];
+                var arrayQuery = [];
                 for (var i = 0; i < subArrayQueue.length; i++) {
 
                     var data = subArrayQueue[i];
+
+
                     var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
                     conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
@@ -105,6 +109,22 @@ p2p.on('metadata', function (metadata) {
 
                             if (result.affectedRows) {
                                 subCount += result.affectedRows;
+
+                                var subPost = [];
+                                var subQuery = [];
+
+
+                                for (var j = 0; j < data.files.length; j++) {
+                                    var itemFileinfo = data.files[j];
+                                    subPost.push(data.hash, itemFileInfo.filename, itemFileInfo.length);
+                                    subQuery.push('insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;');
+
+                                }
+
+                                conn.query(subQuery.join(''), subPost, function (err, result) {
+
+
+                                })
 
                             }
 
