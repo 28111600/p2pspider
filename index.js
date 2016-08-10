@@ -112,8 +112,8 @@ p2p.on('metadata', function (metadata) {
                             if (result.affectedRows) {
                                 subCount += result.affectedRows;
 
-                                if (data.files.
-                                length = 0) { console.log(metadata); }
+                                if (data.files.length === 0) { console.log(metadata); }
+
                                 for (var j = 0; j < data.files.length; j++) {
                                     var itemFileinfo = data.files[j];
                                     var post = [data.hash, itemFileinfo.filename, itemFileinfo.length];
@@ -124,6 +124,11 @@ p2p.on('metadata', function (metadata) {
                                         if (err) {
                                             console.log(query, post);
                                             throw err;
+                                        }
+
+                                        if (result.affectedRows===0){
+
+                                            console.log(metadata); 
                                         }
                                     })
                                 }
