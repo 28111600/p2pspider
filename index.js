@@ -38,7 +38,7 @@ var getFullName = function (path) {
     var chrPathSplit = "/";
     var textPath = [];
     for (var i = 0; i < path.length; i++) {
-        text.push(path[i].toString('utf8'));
+        textPath.push(path[i].toString('utf8'));
     }
     return textPath.join(chrPathSplit);
 }
