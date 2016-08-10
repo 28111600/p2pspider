@@ -42,6 +42,9 @@ p2p.on('metadata', function (metadata) {
 
     arrayQueue.push(data);
 
+    console.log(metadata);
+
+    if (true) { return; }
     if (arrayQueue.length >= lengthQueue) {
 
         console.log(new Date().toUTCString());
