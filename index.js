@@ -104,6 +104,7 @@ p2p.on('metadata', function (metadata) {
                     var data = subArrayQueue[i];
                     completed += data.files.length;
                 }
+
                 for (var i = 0; i < subArrayQueue.length; i++) {
 
                     var data = subArrayQueue[i];
@@ -130,7 +131,7 @@ p2p.on('metadata', function (metadata) {
                                     conn.query(query, post, function (err, result) {
                                         console.log(2);
                                         completed -= 1;
-
+                                        console.log(completed);
                                         if (completed === 0) {
 
                                             conn.commit(function (err) {
@@ -143,8 +144,8 @@ p2p.on('metadata', function (metadata) {
                                                 count += subCount;
                                                 console.log(subCount + ' / ' + count);
                                                 console.log('success!');
-
-                                                conn.release();
+                                                console.log(this, this === conn);
+                                                this.release();
 
                                             });
 
