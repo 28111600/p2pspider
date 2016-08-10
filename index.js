@@ -22,6 +22,7 @@ var lengthQueue = config.lengthQueue || 10;
 var arrayQueue = [];
 
 
+
 p2p.on('metadata', function (metadata) {
     var data = {};
     data.name = metadata.info.name ? metadata.info.name.toString('utf8') : '';
@@ -42,6 +43,7 @@ p2p.on('metadata', function (metadata) {
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
+
         var conn = mysql.createConnection({
             host: config.db_host,
             user: config.db_user,
@@ -61,7 +63,7 @@ p2p.on('metadata', function (metadata) {
                 var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
 
                 conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
-
+                    console.log("query");
                     if (!err) {
 
                         if (result.affectedRows) {
@@ -74,6 +76,7 @@ p2p.on('metadata', function (metadata) {
             }
 
             conn.commit(function (err) {
+                console.log("commit");
                 if (err) {
                     conn.rollback(function () {
                         throw err;
@@ -82,8 +85,12 @@ p2p.on('metadata', function (metadata) {
                 count += subCount;
                 console.log(subCount + ' / ' + count);
                 console.log('success!');
+               
+                conn.release();
                 conn.end();
             });
+
+            console.log("endtransaction");
 
         });
 
