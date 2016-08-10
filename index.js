@@ -47,19 +47,19 @@ p2p.on('metadata', function (metadata) {
 
     arrayQueue.push(data);
 
-    if (!metadata.info.files) {
-        metadata.info.files = [
-            {
-                length: meta.info.length,
-                path: [metadata.info.name]
-            }
-
-        ]
-
-    }
-
-
-
+    /* if (!metadata.info.files) {
+         metadata.info.files = [
+             {
+                 length: metadata.info.length,
+                 path: [metadata.info.name]
+             }
+ 
+         ]
+ 
+     }
+ 
+ 
+ */
     data.files = [];
 
     if (metadata.info.files) {
