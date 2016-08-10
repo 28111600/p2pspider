@@ -117,6 +117,7 @@ p2p.on('metadata', function (metadata) {
 
                                 for (var j = 0; j < data.files.length; j++) {
                                     var itemFileinfo = data.files[j];
+                                    console.log(j, itemFileinfo);
                                     subPost.push(data.hash, itemFileInfo.filename, itemFileInfo.length);
                                     subQuery.push('insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;');
 
