@@ -103,8 +103,8 @@ p2p.on('metadata', function (metadata) {
 
 
                     var post = [data.hash, data.name, data.length, data.magnet, data.fetchedAt, data.hash];
-
-                    conn.query('insert into p2pspider (hash,name,length,magnet,fetched) select * from ( select ?,?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                    var query = 'insert into p2pspider (hash,name,length,magnet,fetched) select * from ( select ?,?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);';
+                    conn.query(query, post, function (err, result) {
 
                         if (!err) {
 
@@ -117,18 +117,17 @@ p2p.on('metadata', function (metadata) {
 
                                 for (var j = 0; j < data.files.length; j++) {
                                     var itemFileinfo = data.files[j];
-                                    subPost.push(data.hash, itemFileinfo.filename, itemFileinfo.length);
-                                    subQuery.push('insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;');
+                                    var post = [data.hash, itemFileinfo.filename, itemFileinfo.length];
+                                    var query = 'insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;';
 
+                                    conn.query(query, post, function (err, result) {
+
+                                        if (err) {
+                                            console.log(query, post);
+                                            throw err;
+                                        }
+                                    })
                                 }
-
-                                conn.query(subQuery.join(''), subPost, function (err, result) {
-
-                                    if (err) { 
-                                        console.log(subQuery.join(''), subPost);
-                                        throw err; }
-                                })
-
                             }
 
                         }
