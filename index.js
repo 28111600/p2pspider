@@ -69,7 +69,7 @@ p2p.on('metadata', function (metadata) {
 
             for (var j = 0; j < itemFileInfo.path.length; j++) {
 
-                console.log(j + '/' + itemFileInfo.path.length + ' | ' + itemFileInfo.path[i] ? itemFileInfo.path[i].toString('utf8') : "null");
+                console.log(j + '/' + itemFileInfo.path.length + ' | ' + (itemFileInfo.path[i] ? itemFileInfo.path[i].toString('utf8') : "null");
             }
 
             if (itemFileInfo.path) {
