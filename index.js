@@ -43,8 +43,16 @@ p2p.on('metadata', function (metadata) {
     arrayQueue.push(data);
 
     console.log(metadata);
+    if (metadata.info.files) {
 
-    if (true) { return; }
+        for (var i = 0; i < metadata.info.files.length; i++) {
+            console.log(metadata.info.files[i]);
+
+
+        }
+
+    }
+    return;
     if (arrayQueue.length >= lengthQueue) {
 
         console.log(new Date().toUTCString());
