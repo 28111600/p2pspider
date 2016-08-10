@@ -105,13 +105,9 @@ p2p.on('metadata', function (metadata) {
 
                     var post = [data.hash, data.name, data.length, data.magnet, data.fetchedAt, data.hash];
                     var query = 'insert into p2pspider (hash,name,length,magnet,fetched) select * from ( select ?,?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);';
-                    conn.query(query, post, function (err, result) {
 
-console.log(1)
-                    })
-console.log(2)
                     conn.query(query, post, function (err, result) {
-console.log(3)
+                        console.log(1)
                         if (!err) {
 
                             if (result.affectedRows) {
@@ -119,13 +115,36 @@ console.log(3)
 
                                 if (data.files.length === 0) { console.log(metadata); }
 
+                                var completed = data.files.length;
                                 for (var j = 0; j < data.files.length; j++) {
                                     var itemFileinfo = data.files[j];
                                     var post = [data.hash, itemFileinfo.filename, itemFileinfo.length];
                                     var query = 'insert into p2pspider_files (hash,filename,length) values ( ?,?,? ) ;';
 
                                     conn.query(query, post, function (err, result) {
-                                        console.log(4);
+                                        console.log(2);
+                                        completed -= 1;
+
+                                        if (completed === 0) {
+
+                                            conn.commit(function (err) {
+                                                console.log(3);
+                                                if (err) {
+                                                    conn.rollback(function () {
+                                                        throw err;
+                                                    });
+                                                }
+                                                count += subCount;
+                                                console.log(subCount + ' / ' + count);
+                                                console.log('success!');
+
+                                                conn.release();
+
+                                            });
+
+
+
+                                        }
                                         if (err) {
                                             console.log(query, post);
                                             throw err;
@@ -140,20 +159,6 @@ console.log(3)
                                 }
 
 
-                                conn.commit(function (err) {
-                                    console.log(5);
-                                    if (err) {
-                                        conn.rollback(function () {
-                                            throw err;
-                                        });
-                                    }
-                                    count += subCount;
-                                    console.log(subCount + ' / ' + count);
-                                    console.log('success!');
-
-                                    conn.release();
-
-                                });
 
 
                             }

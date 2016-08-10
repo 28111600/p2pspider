@@ -2,6 +2,7 @@
 ## Requirement
 
 * `nodejs >= 0.12.0`
+* `node-bencode`
 * `mysql`
 
 ## Installation
