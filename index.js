@@ -150,7 +150,7 @@ p2p.on('metadata', function (metadata) {
                     console.log('success!');
 
                     conn.release();
-
+ aaa();
                 });
 
             });
