@@ -98,6 +98,12 @@ p2p.on('metadata', function (metadata) {
 
                 var arrayPost = [];
                 var arrayQuery = [];
+                var completed = 0;
+
+                for (var i = 0; i < subArrayQueue.length; i++) {
+                    var data = subArrayQueue[i];
+                    completed += data.files.length;
+                }
                 for (var i = 0; i < subArrayQueue.length; i++) {
 
                     var data = subArrayQueue[i];
