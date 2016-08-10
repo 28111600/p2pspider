@@ -85,8 +85,7 @@ p2p.on('metadata', function (metadata) {
                 count += subCount;
                 console.log(subCount + ' / ' + count);
                 console.log('success!');
-               
-                conn.release();
+
                 conn.end();
             });
 
