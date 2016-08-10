@@ -116,8 +116,6 @@ p2p.on('metadata', function (metadata) {
                             if (result.affectedRows) {
                                 subCount += result.affectedRows;
 
-
-
                             }
 
 
@@ -135,7 +133,7 @@ p2p.on('metadata', function (metadata) {
                     count += subCount;
                     console.log(subCount + ' / ' + count);
                     console.log('success!');
-                    console.log(this, this === conn);
+               
                     conn.release();
 
                 });
