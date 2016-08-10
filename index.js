@@ -41,14 +41,12 @@ p2p.on('metadata', function (metadata) {
 
     data.hash = metadata.infohash;
     data.magnet = metadata.magnet;
-    data.length = metadata.info.length;
+    data.length = 0;
     data.fetchedAt = new Date();
     data.files = [];
 
     // console.log("add to queue.");
-    console.log(data.length);
 
-    return ;
     arrayQueue.push(data);
 
     if (!metadata.info.files) {
@@ -75,8 +73,17 @@ p2p.on('metadata', function (metadata) {
             }
         }
     }
-    console.log(data);
 
+
+    if (data.files) {
+        for (var i = 0; i < data.files; i++) {
+
+            var itemFileinfo = data.files[i];
+
+            data.length += itemFileInfo.length;
+        }
+
+    }
 
     if (arrayQueue.length >= lengthQueue) {
 
@@ -101,9 +108,9 @@ p2p.on('metadata', function (metadata) {
                     var data = subArrayQueue[i];
 
 
-                    var post = [data.hash, data.name, data.magnet, data.fetchedAt, data.hash];
+                    var post = [data.hash, data.name, data.length, data.magnet, data.fetchedAt, data.hash];
 
-                    conn.query('insert into p2pspider (hash,name,magnet,fetched) select * from ( select ?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
+                    conn.query('insert into p2pspider (hash,name,length,magnet,fetched) select * from ( select ?,?,?,?,? ) as temp where not exists (select * from p2pspider where hash=?);', post, function (err, result) {
 
                         if (!err) {
 

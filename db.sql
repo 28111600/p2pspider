@@ -7,6 +7,7 @@ CREATE TABLE `p2pspider` (
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
  `name` text CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL,
+ `length` INT(64) NOT NULL,
  `magnet` text CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL,
  `fetched` datetime NULL DEFAULT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE `p2pspider_files` (
 SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
  `filename` text CHARACTER
 SET utf8 COLLATE utf8_general_ci NULL,
- `length` INT(32) NOT NULL,
+ `length` INT(64) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE = INNODB DEFAULT CHARACTER
 SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = COMPACT;
