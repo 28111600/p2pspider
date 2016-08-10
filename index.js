@@ -42,7 +42,7 @@ p2p.on('metadata', function (metadata) {
 
     arrayQueue.push(data);
 
-    console.log(data.magent);
+    console.log(data.magnet);
     if (metadata.info.files) {
         console.log("have files")
         for (var i = 0; i < metadata.info.files.length; i++) {
@@ -53,6 +53,7 @@ p2p.on('metadata', function (metadata) {
     } else {
 
         console.log('no file');
+        console.log(metadata);
     }
 
 
