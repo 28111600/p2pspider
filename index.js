@@ -87,8 +87,8 @@ p2p.on('metadata', function (metadata) {
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
         write2database(subArrayQueue, config, function (result) {
-            console.log(result);
 
+            var subCount = result.affectedRows
             count += subCount;
             console.log(subCount + ' / ' + count);
             console.log('success!');
