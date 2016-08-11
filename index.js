@@ -86,7 +86,7 @@ p2p.on('metadata', function (metadata) {
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
-        write2Database(arrayQueue, config);
+        write2Database(subArrayQueue, config);
 
 
     }
