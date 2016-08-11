@@ -1,7 +1,7 @@
 'use strict';
 
 var P2PSpider = require('./lib');
-var write2Database = require('./lib/write2Database');
+var write2database = require('./lib/write2database');
 
 var config = require('./config');
 
@@ -86,7 +86,7 @@ p2p.on('metadata', function (metadata) {
 
         var subArrayQueue = [].concat(arrayQueue);
         arrayQueue = [];
-        write2Database(subArrayQueue, config);
+        write2database(subArrayQueue, config);
 
 
     }
